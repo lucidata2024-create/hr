@@ -1,0 +1,1630 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>LuciData Tech — HR </title>
+
+  <!-- App styles -->
+  <link rel="stylesheet" href="/assets/css/hr.css" />
+
+  <!-- Optional: prevent FOUC while loader shows -->
+  <style>
+    html { background:#0b1220; }
+    body { margin:0; }
+  </style>
+</head>
+
+<body>
+  <!-- =========================================================
+       App Loader (shown for 300–600ms by JS)
+  ========================================================== -->
+  <div id="appLoader" class="app-loader" role="status" aria-live="polite" aria-label="Se încarcă aplicația">
+    <div class="app-loader__card" aria-hidden="true">
+      <div class="app-loader__brand">
+        <div class="app-loader__logo" aria-hidden="true">
+          <!-- Inline SVG logo -->
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M7.5 17.5c2.2 0 4-1.8 4-4V6.3c0-1.8-1.5-3.3-3.3-3.3H6.2C4.4 3 3 4.4 3 6.2v8.1c0 1.8 1.5 3.2 3.2 3.2h1.3Z" stroke="currentColor" stroke-width="1.6" />
+            <path d="M16.5 21c2.5 0 4.5-2 4.5-4.5V9.2C21 7.4 19.6 6 17.8 6h-2.1c-1.8 0-3.2 1.4-3.2 3.2v7.3c0 2.5 2 4.5 4.5 4.5Z" stroke="currentColor" stroke-width="1.6" />
+          </svg>
+        </div>
+        <div>
+          <div class="app-loader__title">LuciData Tech</div>
+          <div class="app-loader__subtitle">HR · Core HR </div>
+        </div>
+      </div>
+
+      <div class="app-loader__bar" aria-hidden="true">
+        <div class="app-loader__barFill"></div>
+      </div>
+
+      <div class="app-loader__hint">Inițializare date, verificare securitate locală, pregătire interfață…</div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       App Shell
+  ========================================================== -->
+  <div id="app" class="app" data-theme="enterprise" hidden>
+    <!-- Skip link -->
+    <a class="skip-link" href="#mainContent">Sari la conținut</a>
+
+    <!-- ===================== Sidebar ===================== -->
+    <aside class="sidebar" aria-label="Navigație HR">
+      <div class="sidebar__top">
+        <div class="brand" aria-label="LuciData Tech">
+          <div class="brand__mark" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M6.5 18c2.4 0 4.3-1.9 4.3-4.3V6.6C10.8 5 9.5 3.7 7.9 3.7H6.3C4.7 3.7 3.4 5 3.4 6.6v8.2C3.4 16.6 4.9 18 6.7 18H6.5Z" stroke="currentColor" stroke-width="1.7"/>
+              <path d="M16.8 21.3c2.6 0 4.7-2.1 4.7-4.7V9.3c0-1.8-1.5-3.3-3.3-3.3h-2.3c-1.8 0-3.3 1.5-3.3 3.3v7.3c0 2.6 2.1 4.7 4.7 4.7h-.2Z" stroke="currentColor" stroke-width="1.7"/>
+            </svg>
+          </div>
+          <div class="brand__text">
+            <div class="brand__name">LuciData Tech</div>
+            <div class="brand__meta">HR/Payroll · Core HR</div>
+          </div>
+        </div>
+
+        <div class="sidebar__search">
+          <label class="field__label" for="globalSearch">Căutare rapidă</label>
+          <div class="field field--icon">
+            <span class="field__icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="1.7"/>
+                <path d="M16.5 16.5 21 21" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <input id="globalSearch" class="field__input" type="search" placeholder="Angajat, document, cerere…" autocomplete="off" />
+          </div>
+          <div class="sidebar__searchHint" id="globalSearchHint" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Secțiuni">
+        <button class="nav__item is-active" type="button" data-route="overview" aria-current="page">
+          <span class="nav__icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M4 13.5V20a1 1 0 0 0 1 1h5.5v-7.5H4Z" stroke="currentColor" stroke-width="1.7"/>
+              <path d="M13.5 3H20a1 1 0 0 1 1 1v7.5h-7.5V3Z" stroke="currentColor" stroke-width="1.7"/>
+              <path d="M13.5 13.5H21V20a1 1 0 0 1-1 1h-6.5v-7.5Z" stroke="currentColor" stroke-width="1.7"/>
+              <path d="M3 4a1 1 0 0 1 1-1h6.5v7.5H3V4Z" stroke="currentColor" stroke-width="1.7"/>
+            </svg>
+          </span>
+          <span class="nav__text">Dashboard HR</span>
+        </button>
+
+        <button class="nav__item" type="button" data-route="employees">
+          <span class="nav__icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M16 11a4 4 0 1 0-8 0" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+              <path d="M4.5 21a7.5 7.5 0 0 1 15 0" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+              <path d="M19 7.5a3 3 0 1 1-2.4-2.94" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span class="nav__text">Angajați</span>
+        </button>
+
+        <button class="nav__item" type="button" data-route="documents">
+          <span class="nav__icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M7 3h7l3 3v15a1 1 0 0 1-1 1H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7"/>
+              <path d="M14 3v4a1 1 0 0 0 1 1h4" stroke="currentColor" stroke-width="1.7"/>
+              <path d="M8 12h8M8 16h8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span class="nav__text">Dosar Digital</span>
+        </button>
+
+        <button class="nav__item" type="button" data-route="orgchart">
+          <span class="nav__icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M12 3v6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+              <path d="M6 9h12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+              <path d="M6 9v4m12-4v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+              <path d="M4.5 15.5h5v5h-5v-5Zm10 0h5v5h-5v-5Z" stroke="currentColor" stroke-width="1.7"/>
+            </svg>
+          </span>
+          <span class="nav__text">Organigramă</span>
+        </button>
+
+        <button class="nav__item" type="button" data-route="workflows">
+          <span class="nav__icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M7 7h10M7 12h10M7 17h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+              <path d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5Z" stroke="currentColor" stroke-width="1.7"/>
+            </svg>
+          </span>
+          <span class="nav__text">Workflows</span>
+        </button>
+
+        <button class="nav__item" type="button" data-route="ai">
+          <span class="nav__icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M9 3v3M15 3v3M6 9H3m3 6H3m18-6h-3m3 6h-3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+              <path d="M8 7h8a3 3 0 0 1 3 3v4a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3v-4a3 3 0 0 1 3-3Z" stroke="currentColor" stroke-width="1.7"/>
+              <path d="M9.5 12h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span class="nav__text">AI Center</span>
+        </button>
+
+        <button class="nav__item" type="button" data-route="settings">
+          <span class="nav__icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" stroke="currentColor" stroke-width="1.7"/>
+              <path d="M19.4 15a7.9 7.9 0 0 0 .1-6l2-1.2-2-3.5-2.2.8a8.2 8.2 0 0 0-5.1-3L12 0H8l-.2 2.1a8.2 8.2 0 0 0-5.1 3L.5 4.3l-2 3.5 2 1.2a7.9 7.9 0 0 0 0 6l-2 1.2 2 3.5 2.2-.8a8.2 8.2 0 0 0 5.1 3L8 24h4l.2-2.1a8.2 8.2 0 0 0 5.1-3l2.2.8 2-3.5-2-1.2Z" stroke="currentColor" stroke-width="1.2" opacity=".6"/>
+            </svg>
+          </span>
+          <span class="nav__text">Setări</span>
+        </button>
+      </nav>
+
+      <div class="sidebar__bottom">
+        <div class="sidebar__meta">
+          <div class="chip" aria-label="Stocare locală activă">
+            <span class="dot dot--ok" aria-hidden="true"></span>
+            <span>LocalStorage</span>
+          </div>
+          <div class="chip" aria-label="Fără backend">
+            <span class="dot dot--info" aria-hidden="true"></span>
+            <span>Offline</span>
+          </div>
+        </div>
+        <div class="sidebar__footer">
+          <div class="muted">© <span id="yearNow">2026</span> LuciData Tech</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ===================== Main ===================== -->
+    <div class="shell">
+      <!-- Topbar -->
+      <header class="topbar" aria-label="Header aplicație">
+        <div class="topbar__left">
+          <button id="btnSidebarToggle" class="icon-btn icon-btn--ghost" type="button" aria-label="Deschide/închide meniul">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </button>
+
+          <div class="topbar__titleWrap">
+            <h1 class="topbar__title" id="pageTitle">Dashboard HR</h1>
+            <div class="topbar__subtitle" id="pageSubtitle">Overview · KPI · Documente · Cereri</div>
+          </div>
+        </div>
+
+        <div class="topbar__right">
+          <div class="topbar__actions">
+            <!-- Notifications -->
+            <div class="notif">
+              <button id="btnNotif" class="icon-btn" type="button" aria-label="Notificări" aria-haspopup="dialog" aria-controls="notifPanel">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M12 22a2.5 2.5 0 0 0 2.4-1.8H9.6A2.5 2.5 0 0 0 12 22Z" stroke="currentColor" stroke-width="1.6"/>
+                  <path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 7h18s-3 0-3-7Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                </svg>
+                <span id="notifBadge" class="badge badge--danger" aria-label="Număr notificări" hidden>0</span>
+              </button>
+
+              <div id="notifPanel" class="panel panel--right" role="dialog" aria-modal="false" aria-label="Panou notificări" hidden>
+                <div class="panel__header">
+                  <div class="panel__title">Notificări</div>
+                  <div class="panel__actions">
+                    <button id="btnNotifMarkAll" class="btn btn--ghost btn--sm" type="button" aria-label="Marchează toate ca citite">Marchează citite</button>
+                    <button id="btnNotifClose" class="icon-btn icon-btn--ghost" type="button" aria-label="Închide notificările">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <div id="notifList" class="panel__body" aria-label="Listă notificări">
+                  <!-- Populated by JS -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick actions -->
+            <button id="btnQuickAddEmployee" class="btn btn--primary" type="button" aria-haspopup="dialog" aria-controls="modalEmployee">
+              + Angajat
+            </button>
+
+            <button id="btnQuickCreateRequest" class="btn btn--soft" type="button" aria-haspopup="dialog" aria-controls="modalRequest">
+              + Cerere
+            </button>
+
+            <!-- Profile chip -->
+            <div class="userchip" aria-label="Utilizator curent">
+              <span class="userchip__avatar" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z" stroke="currentColor" stroke-width="1.7"/>
+                  <path d="M4.5 21a7.5 7.5 0 0 1 15 0" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <div class="userchip__meta">
+                <div class="userchip__name" id="currentUserName">HR Admin</div>
+                <div class="userchip__role" id="currentUserRole">Core HR</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Toast container -->
+      <div id="toastHost" class="toast-host" aria-live="polite" aria-relevant="additions text"></div>
+
+      <!-- Main content -->
+      <main id="mainContent" class="main" tabindex="-1">
+        <!-- ===================== OVERVIEW ===================== -->
+        <section class="route is-active" data-route-view="overview" aria-label="Dashboard HR">
+          <div class="grid grid--kpi" aria-label="Indicatori KPI">
+            <article class="kpi" aria-label="Total angajați">
+              <div class="kpi__top">
+                <div class="kpi__label">Total angajați</div>
+                <span class="pill pill--info" id="kpiEmployeesDelta" aria-label="Schimbare în 30 zile">+0 (30 zile)</span>
+              </div>
+              <div class="kpi__value" id="kpiEmployees">—</div>
+              <div class="kpi__meta">
+                <span class="muted">Activ</span>
+                <strong id="kpiEmployeesActive">—</strong>
+                <span class="sep">•</span>
+                <span class="muted">Inactiv</span>
+                <strong id="kpiEmployeesInactive">—</strong>
+              </div>
+            </article>
+
+            <article class="kpi" aria-label="Documente expirate">
+              <div class="kpi__top">
+                <div class="kpi__label">Documente expirate</div>
+                <span class="pill pill--danger" id="kpiExpiredBadge">EXPIRAT</span>
+              </div>
+              <div class="kpi__value" id="kpiDocsExpired">—</div>
+              <div class="kpi__meta">
+                <span class="muted">Warning &lt; 30 zile</span>
+                <strong id="kpiDocsWarning">—</strong>
+              </div>
+            </article>
+
+            <article class="kpi" aria-label="Cereri în așteptare">
+              <div class="kpi__top">
+                <div class="kpi__label">Cereri în așteptare</div>
+                <span class="pill pill--warning" id="kpiPendingBadge">PENDING</span>
+              </div>
+              <div class="kpi__value" id="kpiRequestsPending">—</div>
+              <div class="kpi__meta">
+                <span class="muted">Draft</span> <strong id="kpiRequestsDraft">—</strong>
+                <span class="sep">•</span>
+                <span class="muted">Aprobate</span> <strong id="kpiRequestsApproved">—</strong>
+              </div>
+            </article>
+
+            <article class="kpi" aria-label="Risc churn ridicat">
+              <div class="kpi__top">
+                <div class="kpi__label">Risc churn ridicat</div>
+                <span class="pill pill--danger" id="kpiChurnBadge">HIGH</span>
+              </div>
+              <div class="kpi__value" id="kpiChurnHigh">—</div>
+              <div class="kpi__meta">
+                <span class="muted">Ultimele 30 zile</span>
+                <strong id="kpiFeedback30">—</strong>
+              </div>
+            </article>
+          </div>
+
+          <div class="grid grid--2">
+            <section class="card" aria-label="Documente cu expirare iminentă">
+              <div class="card__header">
+                <div>
+                  <h2 class="card__title">Alerte documente</h2>
+                  <div class="card__subtitle">Expirări în următoarele 30 zile + expirate</div>
+                </div>
+                <div class="card__actions">
+                  <button class="btn btn--ghost btn--sm" type="button" data-nav="documents" aria-label="Deschide Dosar Digital">Vezi Dosar Digital</button>
+                </div>
+              </div>
+              <div class="card__body">
+                <div class="table-toolbar">
+                  <div class="field field--icon">
+                    <span class="field__icon" aria-hidden="true">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="1.7"/>
+                        <path d="M16.5 16.5 21 21" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                      </svg>
+                    </span>
+                    <input id="ovDocsSearch" class="field__input" type="search" placeholder="Caută: nume, tip, status…" autocomplete="off" aria-label="Caută documente" />
+                  </div>
+                  <div class="seg" role="tablist" aria-label="Filtru documente">
+                    <button class="seg__btn is-active" type="button" data-filter="all" aria-selected="true">Toate</button>
+                    <button class="seg__btn" type="button" data-filter="expired" aria-selected="false">Expirate</button>
+                    <button class="seg__btn" type="button" data-filter="warning" aria-selected="false">Atenție</button>
+                  </div>
+                </div>
+
+                <div class="table-wrap" role="region" aria-label="Tabel documente">
+                  <table class="table" aria-label="Documente alertă">
+                    <thead>
+                      <tr>
+                        <th scope="col" data-sort="employee">Angajat</th>
+                        <th scope="col" data-sort="type">Tip</th>
+                        <th scope="col" data-sort="expiry">Expirare</th>
+                        <th scope="col">Status</th>
+                        <th scope="col" class="col-actions">Acțiuni</th>
+                      </tr>
+                    </thead>
+                    <tbody id="ovDocsTbody">
+                      <!-- JS -->
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="table-footer">
+                  <div class="muted" id="ovDocsCount">—</div>
+                  <div class="pager" aria-label="Paginare documente">
+                    <button class="btn btn--ghost btn--sm" type="button" id="ovDocsPrev" aria-label="Pagina anterioară">Înapoi</button>
+                    <div class="pager__meta" id="ovDocsPageMeta" aria-label="Pagina curentă">—</div>
+                    <button class="btn btn--ghost btn--sm" type="button" id="ovDocsNext" aria-label="Pagina următoare">Înainte</button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="card" aria-label="Distribuție sentiment feedback">
+              <div class="card__header">
+                <div>
+                  <h2 class="card__title">Sentiment (ultimele 30 zile)</h2>
+                  <div class="card__subtitle">Distribuție Positive / Neutral / Negative</div>
+                </div>
+                <div class="card__actions">
+                  <button class="btn btn--ghost btn--sm" type="button" data-nav="ai" aria-label="Deschide AI Center">Deschide AI Center</button>
+                </div>
+              </div>
+              <div class="card__body">
+                <div class="sentiment">
+                  <div class="sentiment__chart" aria-label="Grafic distribuție sentiment" role="img">
+                    <!-- Simple SVG chart (bars) — values set by JS -->
+                    <svg id="sentimentSvg" viewBox="0 0 420 160" width="100%" height="160" preserveAspectRatio="none" aria-hidden="true">
+                      <defs>
+                        <linearGradient id="g1" x1="0" x2="0" y1="0" y2="1">
+                          <stop offset="0" stop-opacity=".65" />
+                          <stop offset="1" stop-opacity=".15" />
+                        </linearGradient>
+                      </defs>
+                      <rect x="0" y="0" width="420" height="160" fill="transparent"></rect>
+                      <line x1="20" y1="140" x2="400" y2="140" stroke="currentColor" stroke-opacity=".18"></line>
+
+                      <g id="barPositive">
+                        <rect x="60" y="80" width="70" height="60" rx="10" fill="currentColor" fill-opacity=".18"></rect>
+                        <rect x="60" y="80" width="70" height="60" rx="10" fill="url(#g1)"></rect>
+                        <text x="95" y="156" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity=".7">Positive</text>
+                      </g>
+
+                      <g id="barNeutral">
+                        <rect x="175" y="95" width="70" height="45" rx="10" fill="currentColor" fill-opacity=".18"></rect>
+                        <rect x="175" y="95" width="70" height="45" rx="10" fill="url(#g1)"></rect>
+                        <text x="210" y="156" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity=".7">Neutral</text>
+                      </g>
+
+                      <g id="barNegative">
+                        <rect x="290" y="65" width="70" height="75" rx="10" fill="currentColor" fill-opacity=".18"></rect>
+                        <rect x="290" y="65" width="70" height="75" rx="10" fill="url(#g1)"></rect>
+                        <text x="325" y="156" text-anchor="middle" font-size="11" fill="currentColor" fill-opacity=".7">Negative</text>
+                      </g>
+                    </svg>
+                  </div>
+
+                  <div class="sentiment__legend" aria-label="Rezumat sentiment">
+                    <div class="stat">
+                      <div class="stat__label">Positive</div>
+                      <div class="stat__value" id="sentPos">—</div>
+                    </div>
+                    <div class="stat">
+                      <div class="stat__label">Neutral</div>
+                      <div class="stat__value" id="sentNeu">—</div>
+                    </div>
+                    <div class="stat">
+                      <div class="stat__label">Negative</div>
+                      <div class="stat__value" id="sentNeg">—</div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="stat">
+                      <div class="stat__label">Churn risk High</div>
+                      <div class="stat__value" id="sentChurnHigh">—</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card__note">
+                  Scorurile sunt calculate local (fără API) pe baza unui dicționar de termeni și reguli de risc.
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <div class="grid grid--2">
+            <section class="card" aria-label="Ultimele cereri workflows">
+              <div class="card__header">
+                <div>
+                  <h2 class="card__title">Ultimele cereri</h2>
+                  <div class="card__subtitle">Draft / Pending / Approved / Rejected</div>
+                </div>
+                <div class="card__actions">
+                  <button class="btn btn--ghost btn--sm" type="button" data-nav="workflows" aria-label="Deschide Workflows">Vezi toate</button>
+                </div>
+              </div>
+              <div class="card__body">
+                <div class="table-toolbar">
+                  <div class="field field--icon">
+                    <span class="field__icon" aria-hidden="true">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="1.7"/>
+                        <path d="M16.5 16.5 21 21" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                      </svg>
+                    </span>
+                    <input id="ovReqSearch" class="field__input" type="search" placeholder="Caută: tip, inițiator, status…" autocomplete="off" aria-label="Caută cereri" />
+                  </div>
+
+                  <select id="ovReqStatus" class="select" aria-label="Filtru status">
+                    <option value="all">Toate statusurile</option>
+                    <option value="Draft">Draft</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Rejected">Rejected</option>
+                  </select>
+                </div>
+
+                <div class="table-wrap" role="region" aria-label="Tabel cereri">
+                  <table class="table" aria-label="Cereri recente">
+                    <thead>
+                      <tr>
+                        <th scope="col" data-sort="createdAt">Data</th>
+                        <th scope="col" data-sort="type">Tip</th>
+                        <th scope="col" data-sort="requester">Inițiator</th>
+                        <th scope="col">Nivel</th>
+                        <th scope="col">Status</th>
+                        <th scope="col" class="col-actions">Acțiuni</th>
+                      </tr>
+                    </thead>
+                    <tbody id="ovReqTbody">
+                      <!-- JS -->
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="table-footer">
+                  <div class="muted" id="ovReqCount">—</div>
+                  <div class="pager" aria-label="Paginare cereri">
+                    <button class="btn btn--ghost btn--sm" type="button" id="ovReqPrev" aria-label="Pagina anterioară">Înapoi</button>
+                    <div class="pager__meta" id="ovReqPageMeta" aria-label="Pagina curentă">—</div>
+                    <button class="btn btn--ghost btn--sm" type="button" id="ovReqNext" aria-label="Pagina următoare">Înainte</button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="card" aria-label="Acțiuni rapide">
+              <div class="card__header">
+                <div>
+                  <h2 class="card__title">Acțiuni rapide</h2>
+                  <div class="card__subtitle">Operațiuni frecvente HR</div>
+                </div>
+              </div>
+              <div class="card__body">
+                <div class="quick grid grid--2">
+                  <button class="quick__item" type="button" aria-label="Adaugă angajat" data-open="modalEmployee" data-mode="create">
+                    <div class="quick__icon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 11a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z" stroke="currentColor" stroke-width="1.7"/>
+                        <path d="M4.5 21a7.5 7.5 0 0 1 15 0" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                        <path d="M19 8v6M16 11h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                      </svg>
+                    </div>
+                    <div class="quick__text">
+                      <div class="quick__title">Angajat nou</div>
+                      <div class="quick__sub">Onboarding + profil complet</div>
+                    </div>
+                  </button>
+
+                  <button class="quick__item" type="button" aria-label="Încarcă document" data-open="modalDocument">
+                    <div class="quick__icon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 3v10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                        <path d="M8 7l4-4 4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M4 14v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                      </svg>
+                    </div>
+                    <div class="quick__text">
+                      <div class="quick__title">Upload document</div>
+                      <div class="quick__sub">CI, contract, diplomă…</div>
+                    </div>
+                  </button>
+
+                  <button class="quick__item" type="button" aria-label="Creează cerere workflow" data-open="modalRequest" data-mode="create">
+                    <div class="quick__icon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M7 7h10M7 12h10M7 17h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                        <path d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5Z" stroke="currentColor" stroke-width="1.7"/>
+                      </svg>
+                    </div>
+                    <div class="quick__text">
+                      <div class="quick__title">Cerere nouă</div>
+                      <div class="quick__sub">Concediu, echipament IT…</div>
+                    </div>
+                  </button>
+
+                  <button class="quick__item" type="button" aria-label="AI Center: OCR și Sentiment" data-nav="ai">
+                    <div class="quick__icon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M8 7h8a3 3 0 0 1 3 3v4a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3v-4a3 3 0 0 1 3-3Z" stroke="currentColor" stroke-width="1.7"/>
+                        <path d="M9.5 12h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                      </svg>
+                    </div>
+                    <div class="quick__text">
+                      <div class="quick__title">AI Center</div>
+                      <div class="quick__sub">OCR simulare + churn risk</div>
+                    </div>
+                  </button>
+                </div>
+
+                <div class="divider"></div>
+
+                <section class="mini" aria-label="Rezumat sistem">
+                  <div class="mini__row">
+                    <span class="muted">Bază de date:</span>
+                    <strong>localStorage</strong>
+                  </div>
+                  <div class="mini__row">
+                    <span class="muted">Chei aplicație:</span>
+                    <strong>HR_DB, HR_NOTIFS, HR_SETTINGS, HR_AUDIT</strong>
+                  </div>
+                  <div class="mini__row">
+                    <span class="muted">Seed demo:</span>
+                    <strong>18+ angajați · 40+ documente · 12+ cereri · 25+ feedback</strong>
+                  </div>
+                </section>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <!-- ===================== EMPLOYEES ===================== -->
+        <section class="route" data-route-view="employees" aria-label="Angajați">
+          <div class="page-head">
+            <div>
+              <h2 class="page-title">Angajați</h2>
+              <div class="page-subtitle">CRUD complet · validări · status Activ/Inactiv</div>
+            </div>
+            <div class="page-actions">
+              <button class="btn btn--primary" type="button" data-open="modalEmployee" data-mode="create" aria-label="Adaugă angajat">+ Adaugă</button>
+              <button class="btn btn--ghost" type="button" id="btnEmployeesExportCsv" aria-label="Export listă (CSV)">Export CSV</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card__body">
+              <div class="table-toolbar">
+                <div class="field field--icon">
+                  <span class="field__icon" aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                      <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="1.7"/>
+                      <path d="M16.5 16.5 21 21" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                    </svg>
+                  </span>
+                  <input id="empSearch" class="field__input" type="search" placeholder="Caută: nume, email, rol, tag…" autocomplete="off" aria-label="Caută angajați" />
+                </div>
+
+                <select id="empDept" class="select" aria-label="Filtru departament">
+                  <option value="all">Toate departamentele</option>
+                  <option value="HR">HR</option>
+                  <option value="IT">IT</option>
+                  <option value="Sales">Sales</option>
+                  <option value="Call Center">Call Center</option>
+                </select>
+
+                <select id="empStatus" class="select" aria-label="Filtru status">
+                  <option value="all">Toate statusurile</option>
+                  <option value="Activ">Activ</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+
+                <div class="toolbar-right">
+                  <label class="field__label sr-only" for="empPageSize">Rânduri/pagină</label>
+                  <select id="empPageSize" class="select select--sm" aria-label="Rânduri pe pagină">
+                    <option value="10">10</option>
+                    <option value="15" selected>15</option>
+                    <option value="25">25</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="table-wrap" role="region" aria-label="Tabel angajați">
+                <table class="table table--sticky" aria-label="Listă angajați">
+                  <thead>
+                    <tr>
+                      <th scope="col" data-sort="name">Nume</th>
+                      <th scope="col" data-sort="department">Departament</th>
+                      <th scope="col" data-sort="role">Rol</th>
+                      <th scope="col" data-sort="email">Email companie</th>
+                      <th scope="col" data-sort="status">Status</th>
+                      <th scope="col" class="col-actions">Acțiuni</th>
+                    </tr>
+                  </thead>
+                  <tbody id="empTbody">
+                    <!-- JS -->
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="table-footer">
+                <div class="muted" id="empCount">—</div>
+                <div class="pager" aria-label="Paginare angajați">
+                  <button class="btn btn--ghost btn--sm" type="button" id="empPrev" aria-label="Pagina anterioară">Înapoi</button>
+                  <div class="pager__meta" id="empPageMeta" aria-label="Pagina curentă">—</div>
+                  <button class="btn btn--ghost btn--sm" type="button" id="empNext" aria-label="Pagina următoare">Înainte</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== DOCUMENTS ===================== -->
+        <section class="route" data-route-view="documents" aria-label="Dosar Digital">
+          <div class="page-head">
+            <div>
+              <h2 class="page-title">Dosar Digital</h2>
+              <div class="page-subtitle">Upload metadata · expirări · badge OK / ATENȚIE / EXPIRAT</div>
+            </div>
+            <div class="page-actions">
+              <button class="btn btn--primary" type="button" data-open="modalDocument" aria-label="Încarcă document">+ Upload document</button>
+              <button class="btn btn--ghost" type="button" id="btnDocsBulkStatus" aria-label="Recalculează statusuri">Recalculează</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card__body">
+              <div class="table-toolbar">
+                <div class="field field--icon">
+                  <span class="field__icon" aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                      <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="1.7"/>
+                      <path d="M16.5 16.5 21 21" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                    </svg>
+                  </span>
+                  <input id="docSearch" class="field__input" type="search" placeholder="Caută: angajat, tip, fișier…" autocomplete="off" aria-label="Caută documente" />
+                </div>
+
+                <select id="docType" class="select" aria-label="Filtru tip document">
+                  <option value="all">Toate tipurile</option>
+                  <option value="CI">CI</option>
+                  <option value="Contract">Contract</option>
+                  <option value="Diploma">Diplomă</option>
+                  <option value="Certificat">Certificat</option>
+                  <option value="Acord">Acord</option>
+                  <option value="Altele">Altele</option>
+                </select>
+
+                <select id="docStatus" class="select" aria-label="Filtru status document">
+                  <option value="all">Toate statusurile</option>
+                  <option value="OK">OK</option>
+                  <option value="Warning">ATENȚIE</option>
+                  <option value="Expired">EXPIRAT</option>
+                </select>
+
+                <div class="toolbar-right">
+                  <label class="field__label sr-only" for="docPageSize">Rânduri/pagină</label>
+                  <select id="docPageSize" class="select select--sm" aria-label="Rânduri pe pagină">
+                    <option value="10">10</option>
+                    <option value="15" selected>15</option>
+                    <option value="25">25</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="table-wrap" role="region" aria-label="Tabel documente">
+                <table class="table table--sticky" aria-label="Listă documente">
+                  <thead>
+                    <tr>
+                      <th scope="col" data-sort="employee">Angajat</th>
+                      <th scope="col" data-sort="tip">Tip</th>
+                      <th scope="col" data-sort="fileName">Fișier</th>
+                      <th scope="col" data-sort="expiryDate">Expirare</th>
+                      <th scope="col">Expiră în</th>
+                      <th scope="col">Status</th>
+                      <th scope="col" class="col-actions">Acțiuni</th>
+                    </tr>
+                  </thead>
+                  <tbody id="docTbody">
+                    <!-- JS -->
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="table-footer">
+                <div class="muted" id="docCount">—</div>
+                <div class="pager" aria-label="Paginare documente">
+                  <button class="btn btn--ghost btn--sm" type="button" id="docPrev" aria-label="Pagina anterioară">Înapoi</button>
+                  <div class="pager__meta" id="docPageMeta" aria-label="Pagina curentă">—</div>
+                  <button class="btn btn--ghost btn--sm" type="button" id="docNext" aria-label="Pagina următoare">Înainte</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== ORGCHART ===================== -->
+        <section class="route" data-route-view="orgchart" aria-label="Organigramă">
+          <div class="page-head">
+            <div>
+              <h2 class="page-title">Organigramă dinamică</h2>
+              <div class="page-subtitle">Ierarhie (CEO → manageri → echipe) · căutare · filtru departament</div>
+            </div>
+          </div>
+
+          <div class="grid grid--2">
+            <div class="card">
+              <div class="card__body">
+                <div class="form-row">
+                  <div class="field">
+                    <label class="field__label" for="orgSearch">Căutare nume/rol</label>
+                    <input id="orgSearch" class="field__input" type="search" placeholder="Ex: Popescu, Team Lead, HR…" autocomplete="off" />
+                  </div>
+
+                  <div class="field">
+                    <label class="field__label" for="orgDept">Departament</label>
+                    <select id="orgDept" class="select" aria-label="Filtru departament organigramă">
+                      <option value="all">Toate</option>
+                      <option value="HR">HR</option>
+                      <option value="IT">IT</option>
+                      <option value="Sales">Sales</option>
+                      <option value="Call Center">Call Center</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="muted">
+                  Tip: click pe un nod pentru a vedea detalii rapide și acțiuni (profil, documente, cereri).
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card__body">
+                <div class="org-legend" aria-label="Legendă">
+                  <span class="pill pill--info">CEO</span>
+                  <span class="pill pill--soft">Manager</span>
+                  <span class="pill pill--ghost">Echipă</span>
+                </div>
+                <div class="divider"></div>
+                <div id="orgTree" class="org-tree" role="tree" aria-label="Arbore organigramă">
+                  <!-- JS renders DOM with indent/lines -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== WORKFLOWS ===================== -->
+        <section class="route" data-route-view="workflows" aria-label="Workflows">
+          <div class="page-head">
+            <div>
+              <h2 class="page-title">Workflows de aprobare</h2>
+              <div class="page-subtitle">Concediu · Schimbare date · Cerere document · Echipament IT</div>
+            </div>
+            <div class="page-actions">
+              <button class="btn btn--primary" type="button" data-open="modalRequest" data-mode="create" aria-label="Creează cerere">+ Creează cerere</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card__body">
+              <div class="table-toolbar">
+                <div class="field field--icon">
+                  <span class="field__icon" aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                      <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="1.7"/>
+                      <path d="M16.5 16.5 21 21" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                    </svg>
+                  </span>
+                  <input id="reqSearch" class="field__input" type="search" placeholder="Caută: tip, inițiator, motiv…" autocomplete="off" aria-label="Caută cereri" />
+                </div>
+
+                <select id="reqType" class="select" aria-label="Filtru tip cerere">
+                  <option value="all">Toate tipurile</option>
+                  <option value="Concediu">Concediu</option>
+                  <option value="Schimbare date">Schimbare date</option>
+                  <option value="Cerere document">Cerere document</option>
+                  <option value="Echipament IT">Echipament IT</option>
+                </select>
+
+                <select id="reqStatus" class="select" aria-label="Filtru status cerere">
+                  <option value="all">Toate statusurile</option>
+                  <option value="Draft">Draft</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Approved">Approved</option>
+                  <option value="Rejected">Rejected</option>
+                </select>
+
+                <div class="toolbar-right">
+                  <label class="field__label sr-only" for="reqPageSize">Rânduri/pagină</label>
+                  <select id="reqPageSize" class="select select--sm" aria-label="Rânduri pe pagină">
+                    <option value="10">10</option>
+                    <option value="15" selected>15</option>
+                    <option value="25">25</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="table-wrap" role="region" aria-label="Tabel cereri workflows">
+                <table class="table table--sticky" aria-label="Listă cereri">
+                  <thead>
+                    <tr>
+                      <th scope="col" data-sort="createdAt">Creat</th>
+                      <th scope="col" data-sort="type">Tip</th>
+                      <th scope="col" data-sort="requester">Inițiator</th>
+                      <th scope="col" data-sort="department">Departament</th>
+                      <th scope="col">Nivel</th>
+                      <th scope="col">Status</th>
+                      <th scope="col" class="col-actions">Acțiuni</th>
+                    </tr>
+                  </thead>
+                  <tbody id="reqTbody">
+                    <!-- JS -->
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="table-footer">
+                <div class="muted" id="reqCount">—</div>
+                <div class="pager" aria-label="Paginare cereri">
+                  <button class="btn btn--ghost btn--sm" type="button" id="reqPrev" aria-label="Pagina anterioară">Înapoi</button>
+                  <div class="pager__meta" id="reqPageMeta" aria-label="Pagina curentă">—</div>
+                  <button class="btn btn--ghost btn--sm" type="button" id="reqNext" aria-label="Pagina următoare">Înainte</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== AI CENTER ===================== -->
+        <section class="route" data-route-view="ai" aria-label="AI Center">
+          <div class="page-head">
+            <div>
+              <h2 class="page-title">AI Center</h2>
+              <div class="page-subtitle">OCR inteligent (simulat) · Analiză sentiment + churn risk (simulat)</div>
+            </div>
+            <div class="page-actions">
+              <button class="btn btn--ghost" type="button" data-open="modalAISettings" aria-label="Setări AI">Setări AI</button>
+            </div>
+          </div>
+
+          <div class="grid grid--2">
+            <section class="card" aria-label="OCR Upload">
+              <div class="card__header">
+                <div>
+                  <h3 class="card__title">OCR Upload (simulare)</h3>
+                  <div class="card__subtitle">Încarcă pdf/jpg/png — extrage câmpuri (nume, CNP mascat, serie CI…)</div>
+                </div>
+              </div>
+              <div class="card__body">
+                <div class="form-row">
+                  <div class="field">
+                    <label class="field__label" for="ocrFile">Fișier</label>
+                    <input id="ocrFile" class="field__input" type="file" accept=".pdf,.png,.jpg,.jpeg" aria-label="Încarcă fișier pentru OCR" />
+                    <div class="field__hint">Nu se face OCR real. Se generează un rezultat local cu “confidence”.</div>
+                  </div>
+
+                  <div class="field">
+                    <label class="field__label" for="ocrApplyMode">Aplică rezultat</label>
+                    <select id="ocrApplyMode" class="select" aria-label="Mod aplicare OCR">
+                      <option value="newEmployee">Angajat nou (prefill profil)</option>
+                      <option value="existingEmployee">Completează angajat existent</option>
+                      <option value="documentOnly">Doar document (ocrExtract)</option>
+                    </select>
+                  </div>
+
+                  <div class="field" id="ocrEmployeePickWrap">
+                    <label class="field__label" for="ocrEmployeePick">Angajat</label>
+                    <select id="ocrEmployeePick" class="select" aria-label="Selectează angajat">
+                      <option value="">Selectează…</option>
+                      <!-- JS -->
+                    </select>
+                  </div>
+                </div>
+
+                <div class="actions-row">
+                  <button id="btnRunOCR" class="btn btn--primary" type="button" aria-label="Rulează simularea OCR">Rulează OCR</button>
+                  <button id="btnUseOCR" class="btn btn--soft" type="button" aria-label="Aplică rezultatul OCR" disabled>Aplică rezultat</button>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="ocr-result" aria-label="Rezultat OCR">
+                  <div class="ocr-result__top">
+                    <div class="ocr-result__title">Rezultat</div>
+                    <div class="ocr-result__meta">
+                      Confidence: <strong id="ocrConfidence">—</strong>
+                    </div>
+                  </div>
+
+                  <div id="ocrFields" class="ocr-fields" aria-label="Câmpuri extrase">
+                    <!-- JS renders extracted fields; highlights low confidence -->
+                  </div>
+
+                  <div class="card__note">
+                    CNP este mascat automat. Câmpurile cu încredere mică sunt marcate pentru verificare.
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="card" aria-label="Anonymous Feedback Inbox">
+              <div class="card__header">
+                <div>
+                  <h3 class="card__title">Anonymous Feedback Inbox</h3>
+                  <div class="card__subtitle">Text realist în română · “Analyze” calculează sentimentScore + churnRisk</div>
+                </div>
+                <div class="card__actions">
+                  <button id="btnAnalyzeFeedback" class="btn btn--primary btn--sm" type="button" aria-label="Analizează feedback">Analyze</button>
+                </div>
+              </div>
+
+              <div class="card__body">
+                <div class="table-toolbar">
+                  <div class="field field--icon">
+                    <span class="field__icon" aria-hidden="true">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="1.7"/>
+                        <path d="M16.5 16.5 21 21" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                      </svg>
+                    </span>
+                    <input id="fbSearch" class="field__input" type="search" placeholder="Caută în feedback…" autocomplete="off" aria-label="Caută feedback" />
+                  </div>
+
+                  <select id="fbDept" class="select" aria-label="Filtru departament feedback">
+                    <option value="all">Toate departamentele</option>
+                    <option value="HR">HR</option>
+                    <option value="IT">IT</option>
+                    <option value="Sales">Sales</option>
+                    <option value="Call Center">Call Center</option>
+                  </select>
+
+                  <select id="fbLabel" class="select" aria-label="Filtru label sentiment">
+                    <option value="all">Toate etichetele</option>
+                    <option value="Positive">Positive</option>
+                    <option value="Neutral">Neutral</option>
+                    <option value="Negative">Negative</option>
+                  </select>
+                </div>
+
+                <div id="fbList" class="fb-list" aria-label="Listă feedback">
+                  <!-- JS -->
+                </div>
+
+                <div class="table-footer">
+                  <div class="muted" id="fbCount">—</div>
+                  <div class="pager" aria-label="Paginare feedback">
+                    <button class="btn btn--ghost btn--sm" type="button" id="fbPrev" aria-label="Pagina anterioară">Înapoi</button>
+                    <div class="pager__meta" id="fbPageMeta" aria-label="Pagina curentă">—</div>
+                    <button class="btn btn--ghost btn--sm" type="button" id="fbNext" aria-label="Pagina următoare">Înainte</button>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <!-- ===================== SETTINGS ===================== -->
+        <section class="route" data-route-view="settings" aria-label="Setări">
+          <div class="page-head">
+            <div>
+              <h2 class="page-title">Setări</h2>
+              <div class="page-subtitle">Export/Import JSON · Reset demo · Preferințe OCR/Sentiment</div>
+            </div>
+          </div>
+
+          <div class="grid grid--2">
+            <section class="card" aria-label="Date și backup">
+              <div class="card__header">
+                <div>
+                  <h3 class="card__title">Date (local)</h3>
+                  <div class="card__subtitle">Exportă / Importă schema completă HR</div>
+                </div>
+              </div>
+              <div class="card__body">
+                <div class="actions-col">
+                  <button id="btnExportJson" class="btn btn--primary" type="button" aria-label="Export JSON">Export JSON</button>
+
+                  <div class="field">
+                    <label class="field__label" for="importJsonFile">Import JSON</label>
+                    <input id="importJsonFile" class="field__input" type="file" accept=".json,application/json" aria-label="Import JSON" />
+                    <div class="field__hint">Importul înlocuiește datele curente din HR_DB (cu validare minimă).</div>
+                  </div>
+
+                  <div class="divider"></div>
+
+                  <button id="btnResetDemo" class="btn btn--danger" type="button" aria-label="Reset demo data">
+                    Reset demo data
+                  </button>
+
+                  <div class="muted small">
+                    Reset șterge cheile <strong>HR_*</strong> din localStorage și reîncarcă seed.
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="card" aria-label="Preferințe aplicație">
+              <div class="card__header">
+                <div>
+                  <h3 class="card__title">Preferințe</h3>
+                  <div class="card__subtitle">UI · Validări · Comportament</div>
+                </div>
+              </div>
+              <div class="card__body">
+                <div class="form-grid">
+                  <div class="field">
+                    <label class="field__label" for="setWarnDays">Prag avertizare documente (zile)</label>
+                    <input id="setWarnDays" class="field__input" type="number" min="7" max="180" step="1" value="30" aria-label="Prag avertizare documente" />
+                    <div class="field__hint">Documentele care expiră sub acest prag devin “ATENȚIE”.</div>
+                  </div>
+
+                  <div class="field">
+                    <label class="field__label" for="setLoaderMs">Loader (ms)</label>
+                    <input id="setLoaderMs" class="field__input" type="number" min="300" max="900" step="50" value="450" aria-label="Durată loader" />
+                    <div class="field__hint">Pentru percepție enterprise, fără a încetini aplicația.</div>
+                  </div>
+
+                  <div class="field">
+                    <label class="field__label" for="setAuditActor">Audit actor (cine)</label>
+                    <input id="setAuditActor" class="field__input" type="text" value="HR Admin" aria-label="Actor audit" />
+                    <div class="field__hint">Numele utilizatorului curent pentru audit log self-service.</div>
+                  </div>
+
+                  <div class="field">
+                    <label class="field__label" for="setDefaultDept">Departament implicit</label>
+                    <select id="setDefaultDept" class="select" aria-label="Departament implicit">
+                      <option value="HR">HR</option>
+                      <option value="IT">IT</option>
+                      <option value="Sales">Sales</option>
+                      <option value="Call Center">Call Center</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="actions-row">
+                  <button id="btnSaveSettings" class="btn btn--primary" type="button" aria-label="Salvează setări">Salvează</button>
+                  <button id="btnRestoreSettings" class="btn btn--ghost" type="button" aria-label="Restabilește implicit">Reset setări</button>
+                </div>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <!-- ===================== EMPLOYEE PORTAL (Self-service) ===================== -->
+        <section class="route" data-route-view="portal" aria-label="Employee Portal">
+          <div class="page-head">
+            <div>
+              <h2 class="page-title">Employee Portal (Self-service)</h2>
+              <div class="page-subtitle">Actualizare date personale · audit log (localStorage)</div>
+            </div>
+          </div>
+
+          <div class="grid grid--2">
+            <section class="card" aria-label="Profil angajat">
+              <div class="card__header">
+                <div>
+                  <h3 class="card__title">Selectează angajat</h3>
+                  <div class="card__subtitle">Simulare portal self-service în aceeași pagină</div>
+                </div>
+              </div>
+              <div class="card__body">
+                <div class="field">
+                  <label class="field__label" for="portalEmployee">Angajat</label>
+                  <select id="portalEmployee" class="select" aria-label="Selectează angajat pentru portal">
+                    <option value="">Selectează…</option>
+                    <!-- JS -->
+                  </select>
+                </div>
+
+                <div class="divider"></div>
+
+                <form id="portalForm" class="form" aria-label="Form portal angajat">
+                  <div class="field">
+                    <label class="field__label" for="portalAddress">Adresă</label>
+                    <input id="portalAddress" class="field__input" type="text" placeholder="Str., nr., oraș, județ" autocomplete="street-address" />
+                  </div>
+
+                  <div class="form-row">
+                    <div class="field">
+                      <label class="field__label" for="portalPhone">Telefon</label>
+                      <input id="portalPhone" class="field__input" type="tel" placeholder="+40 7xx xxx xxx" autocomplete="tel" />
+                    </div>
+                    <div class="field">
+                      <label class="field__label" for="portalEmail">Email personal</label>
+                      <input id="portalEmail" class="field__input" type="email" placeholder="nume@exemplu.ro" autocomplete="email" />
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label class="field__label" for="portalIban">Cont bancar (IBAN)</label>
+                    <input id="portalIban" class="field__input" type="text" placeholder="RO49AAAA1B31007593840000" autocomplete="off" />
+                    <div class="field__hint">Validare simplă pentru IBAN România (RO + lungime + caractere).</div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="field">
+                      <label class="field__label" for="portalEmergName">Contact urgență (nume)</label>
+                      <input id="portalEmergName" class="field__input" type="text" placeholder="Nume Prenume" autocomplete="off" />
+                    </div>
+                    <div class="field">
+                      <label class="field__label" for="portalEmergPhone">Contact urgență (telefon)</label>
+                      <input id="portalEmergPhone" class="field__input" type="tel" placeholder="+40 7xx xxx xxx" autocomplete="off" />
+                    </div>
+                  </div>
+
+                  <div class="actions-row">
+                    <button id="btnPortalSave" class="btn btn--primary" type="submit" aria-label="Salvează modificările">Salvează</button>
+                    <button id="btnPortalReset" class="btn btn--ghost" type="button" aria-label="Anulează modificările">Anulează</button>
+                  </div>
+                </form>
+              </div>
+            </section>
+
+            <section class="card" aria-label="Audit log portal">
+              <div class="card__header">
+                <div>
+                  <h3 class="card__title">Audit log</h3>
+                  <div class="card__subtitle">Cine · când · ce câmp a fost schimbat</div>
+                </div>
+                <div class="card__actions">
+                  <button id="btnAuditClear" class="btn btn--ghost btn--sm" type="button" aria-label="Curăță audit log">Curăță</button>
+                </div>
+              </div>
+              <div class="card__body">
+                <div id="auditList" class="audit-list" aria-label="Listă audit log">
+                  <!-- JS -->
+                </div>
+              </div>
+            </section>
+          </div>
+        </section>
+      </main>
+
+      <!-- Footer (minimal) -->
+      <footer class="footer" aria-label="Footer">
+        <div class="footer__left">
+          <span class="muted">Core HR · local-first · fără backend</span>
+        </div>
+        <div class="footer__right">
+          <button class="btn btn--ghost btn--sm" type="button" id="btnGoPortal" aria-label="Deschide Employee Portal">
+            Employee Portal
+          </button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       Modals
+       - using <dialog> for accessibility; JS handles open/close
+  ========================================================== -->
+
+  <!-- Employee Add/Edit -->
+  <dialog id="modalEmployee" class="modal" aria-label="Angajat">
+    <form method="dialog" class="modal__frame" id="formEmployee" aria-label="Form angajat">
+      <div class="modal__header">
+        <div>
+          <div class="modal__title" id="employeeModalTitle">Angajat</div>
+          <div class="modal__subtitle">Create / Edit · validări email/telefon/IBAN · tags</div>
+        </div>
+        <button class="icon-btn icon-btn--ghost" type="button" data-close="modalEmployee" aria-label="Închide">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal__body">
+        <input type="hidden" id="empId" />
+
+        <div class="form-grid">
+          <div class="field">
+            <label class="field__label" for="empFirstName">Prenume</label>
+            <input id="empFirstName" class="field__input" type="text" required minlength="2" autocomplete="given-name" />
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="empLastName">Nume</label>
+            <input id="empLastName" class="field__input" type="text" required minlength="2" autocomplete="family-name" />
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="empEmailCompany">Email companie</label>
+            <input id="empEmailCompany" class="field__input" type="email" required placeholder="prenume.nume@lucidata.ro" autocomplete="off" />
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="empEmailPersonal">Email personal</label>
+            <input id="empEmailPersonal" class="field__input" type="email" placeholder="nume@exemplu.ro" autocomplete="email" />
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="empPhone">Telefon</label>
+            <input id="empPhone" class="field__input" type="tel" required placeholder="+40 7xx xxx xxx" autocomplete="tel" />
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="empHireDate">Data angajare</label>
+            <input id="empHireDate" class="field__input" type="date" required />
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="empDepartment">Departament</label>
+            <select id="empDepartment" class="select" required aria-label="Departament">
+              <option value="HR">HR</option>
+              <option value="IT">IT</option>
+              <option value="Sales">Sales</option>
+              <option value="Call Center">Call Center</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="empRole">Rol</label>
+            <input id="empRole" class="field__input" type="text" required placeholder="Ex: HR Specialist, Team Lead…" />
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="empManager">Manager</label>
+            <select id="empManager" class="select" aria-label="Manager">
+              <option value="">(Fără manager)</option>
+              <!-- JS -->
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="empStatus">Status</label>
+            <select id="empStatusModal" class="select" aria-label="Status angajat">
+              <option value="Activ">Activ</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+
+          <div class="field field--full">
+            <label class="field__label" for="empAddress">Adresă</label>
+            <input id="empAddress" class="field__input" type="text" placeholder="Str., nr., oraș, județ" autocomplete="street-address" />
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="empIban">IBAN</label>
+            <input id="empIban" class="field__input" type="text" placeholder="RO.." autocomplete="off" />
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="empTags">Tags (separate prin virgulă)</label>
+            <input id="empTags" class="field__input" type="text" placeholder="remote, team lead, night shift" />
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="empEmergName">Contact urgență (nume)</label>
+            <input id="empEmergName" class="field__input" type="text" placeholder="Nume Prenume" />
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="empEmergPhone">Contact urgență (telefon)</label>
+            <input id="empEmergPhone" class="field__input" type="tel" placeholder="+40 7xx xxx xxx" />
+          </div>
+
+          <div class="field field--full">
+            <label class="field__label" for="empNotes">Notes</label>
+            <textarea id="empNotes" class="textarea" rows="3" placeholder="Observații interne (ex: program, echipamente, preferințe)"></textarea>
+          </div>
+
+          <div class="field field--full">
+            <div class="alert alert--info" id="empValidationHint" role="note">
+              Validări: email corect, telefon (format simplu), IBAN RO (validare simplă). Ștergerea este blocată dacă există cereri asociate.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal__footer">
+        <div class="modal__footerLeft">
+          <button id="btnEmpDelete" class="btn btn--danger btn--ghost" type="button" aria-label="Șterge angajat" hidden>Șterge</button>
+          <button id="btnEmpDeactivate" class="btn btn--warning btn--ghost" type="button" aria-label="Dezactivează angajat" hidden>Dezactivează</button>
+        </div>
+        <div class="modal__footerRight">
+          <button class="btn btn--ghost" type="button" data-close="modalEmployee" aria-label="Anulează">Anulează</button>
+          <button id="btnEmpSave" class="btn btn--primary" type="submit" aria-label="Salvează angajat">Salvează</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Document Upload -->
+  <dialog id="modalDocument" class="modal" aria-label="Upload document">
+    <form method="dialog" class="modal__frame" id="formDocument" aria-label="Form document">
+      <div class="modal__header">
+        <div>
+          <div class="modal__title">Upload document</div>
+          <div class="modal__subtitle">Se salvează doar metadata (nume, tip, mărime, date, status)</div>
+        </div>
+        <button class="icon-btn icon-btn--ghost" type="button" data-close="modalDocument" aria-label="Închide">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal__body">
+        <input type="hidden" id="docId" />
+
+        <div class="form-grid">
+          <div class="field field--full">
+            <label class="field__label" for="docEmployee">Angajat</label>
+            <select id="docEmployee" class="select" required aria-label="Angajat pentru document">
+              <option value="">Selectează…</option>
+              <!-- JS -->
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="docTip">Tip</label>
+            <select id="docTip" class="select" required aria-label="Tip document">
+              <option value="CI">CI</option>
+              <option value="Contract">Contract</option>
+              <option value="Diploma">Diplomă</option>
+              <option value="Certificat">Certificat</option>
+              <option value="Acord">Acord</option>
+              <option value="Altele">Altele</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="docFile">Fișier</label>
+            <input id="docFile" class="field__input" type="file" required aria-label="Selectează fișier" />
+            <div class="field__hint">Fișierul nu se salvează în localStorage — doar metadata.</div>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="docIssueDate">Data emitere</label>
+            <input id="docIssueDate" class="field__input" type="date" required />
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="docExpiryDate">Data expirare</label>
+            <input id="docExpiryDate" class="field__input" type="date" required />
+          </div>
+
+          <div class="field field--full">
+            <div class="alert alert--soft" role="note">
+              Statusul (OK / ATENȚIE / EXPIRAT) se calculează automat în funcție de data expirării și pragul din Setări.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal__footer">
+        <div class="modal__footerLeft"></div>
+        <div class="modal__footerRight">
+          <button class="btn btn--ghost" type="button" data-close="modalDocument" aria-label="Anulează">Anulează</button>
+          <button id="btnDocSave" class="btn btn--primary" type="submit" aria-label="Salvează document">Salvează</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Request Create/Edit -->
+  <dialog id="modalRequest" class="modal" aria-label="Cerere workflow">
+    <form method="dialog" class="modal__frame" id="formRequest" aria-label="Form cerere">
+      <div class="modal__header">
+        <div>
+          <div class="modal__title" id="requestModalTitle">Cerere workflow</div>
+          <div class="modal__subtitle">Nivel: Manager → HR → Finance · timeline cu comentarii</div>
+        </div>
+        <button class="icon-btn icon-btn--ghost" type="button" data-close="modalRequest" aria-label="Închide">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal__body">
+        <input type="hidden" id="reqId" />
+
+        <div class="form-grid">
+          <div class="field">
+            <label class="field__label" for="reqTypeModal">Tip</label>
+            <select id="reqTypeModal" class="select" required aria-label="Tip cerere">
+              <option value="Concediu">Concediu</option>
+              <option value="Schimbare date">Schimbare date</option>
+              <option value="Cerere document">Cerere document</option>
+              <option value="Echipament IT">Echipament IT</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="reqRequester">Inițiator</label>
+            <select id="reqRequester" class="select" required aria-label="Inițiator cerere">
+              <option value="">Selectează…</option>
+              <!-- JS -->
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="reqDepartment">Departament</label>
+            <select id="reqDepartment" class="select" required aria-label="Departament cerere">
+              <option value="HR">HR</option>
+              <option value="IT">IT</option>
+              <option value="Sales">Sales</option>
+              <option value="Call Center">Call Center</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="reqStatusModal">Status</label>
+            <select id="reqStatusModal" class="select" aria-label="Status cerere">
+              <option value="Draft">Draft</option>
+              <option value="Pending">Pending</option>
+              <option value="Approved">Approved</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
+
+          <div class="field field--full">
+            <label class="field__label" for="reqMotiv">Motiv</label>
+            <textarea id="reqMotiv" class="textarea" rows="3" required placeholder="Descrie motivul cererii (clar și concis)"></textarea>
+          </div>
+
+          <div class="field field--full">
+            <label class="field__label" for="reqAttachments">Atașamente (metadata)</label>
+            <input id="reqAttachments" class="field__input" type="file" multiple aria-label="Atașamente cerere" />
+            <div class="field__hint">Se salvează doar metadata fișierelor (nume, tip, mărime, data upload).</div>
+          </div>
+
+          <div class="field field--full">
+            <div class="timeline-box" aria-label="Timeline aprobări">
+              <div class="timeline-box__top">
+                <div class="timeline-box__title">Timeline (istoric)</div>
+                <div class="timeline-box__actions">
+                  <button id="btnReqAddComment" class="btn btn--ghost btn--sm" type="button" aria-label="Adaugă comentariu">+ Comentariu</button>
+                </div>
+              </div>
+              <div id="reqTimeline" class="timeline" aria-label="Evenimente timeline">
+                <!-- JS -->
+              </div>
+            </div>
+          </div>
+
+          <div class="field field--full">
+            <div class="alert alert--info" role="note">
+              Aprobările sunt simulate local: Manager → HR → Finance, cu decizii și comentarii în istoric.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal__footer">
+        <div class="modal__footerLeft">
+          <button id="btnReqOpenDetails" class="btn btn--soft btn--ghost" type="button" aria-label="Detalii cerere">Detalii</button>
+        </div>
+        <div class="modal__footerRight">
+          <button class="btn btn--ghost" type="button" data-close="modalRequest" aria-label="Anulează">Anulează</button>
+          <button id="btnReqSave" class="btn btn--primary" type="submit" aria-label="Salvează cerere">Salvează</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Request Details (read-only) -->
+  <dialog id="modalRequestDetails" class="modal" aria-label="Detalii cerere">
+    <div class="modal__frame" role="document" aria-label="Detalii cerere">
+      <div class="modal__header">
+        <div>
+          <div class="modal__title">Detalii cerere</div>
+          <div class="modal__subtitle" id="reqDetailsSubtitle">—</div>
+        </div>
+        <button class="icon-btn icon-btn--ghost" type="button" data-close="modalRequestDetails" aria-label="Închide">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal__body">
+        <div class="detail-grid" id="reqDetailsGrid" aria-label="Grilă detalii">
+          <!-- JS -->
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="timeline-box" aria-label="Timeline detaliat">
+          <div class="timeline-box__top">
+            <div class="timeline-box__title">Timeline</div>
+          </div>
+          <div id="reqDetailsTimeline" class="timeline" aria-label="Evenimente timeline">
+            <!-- JS -->
+          </div>
+        </div>
+      </div>
+
+      <div class="modal__footer">
+        <div class="modal__footerLeft"></div>
+        <div class="modal__footerRight">
+          <button class="btn btn--primary" type="button" data-close="modalRequestDetails" aria-label="Închide">Închide</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- AI Settings -->
+  <dialog id="modalAISettings" class="modal" aria-label="Setări AI">
+    <form method="dialog" class="modal__frame" id="formAISettings" aria-label="Form setări AI">
+      <div class="modal__header">
+        <div>
+          <div class="modal__title">Setări AI (simulare)</div>
+          <div class="modal__subtitle">Reguli OCR + dicționar sentiment (local)</div>
+        </div>
+        <button class="icon-btn icon-btn--ghost" type="button" data-close="modalAISettings" aria-label="Închide">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal__body">
+        <div class="form-grid">
+          <div class="field">
+            <label class="field__label" for="aiOcrMinConf">OCR: prag minim confidence</label>
+            <input id="aiOcrMinConf" class="field__input" type="number" min="0.4" max="0.95" step="0.01" value="0.72" />
+            <div class="field__hint">Sub prag, câmpurile sunt evidențiate ca “low confidence”.</div>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="aiChurnWindowDays">Churn: fereastră KPI (zile)</label>
+            <input id="aiChurnWindowDays" class="field__input" type="number" min="7" max="90" step="1" value="30" />
+            <div class="field__hint">KPI “Risc churn ridicat” ia în calcul feedback în acest interval.</div>
+          </div>
+
+          <div class="field field--full">
+            <label class="field__label" for="aiKeywords">Cuvinte cheie risc (separate prin virgulă)</label>
+            <input id="aiKeywords" class="field__input" type="text" value="vreau să plec,burnout,salariu mic,stres,toxic,obosit,demisie" />
+            <div class="field__hint">Reguli simple: cuvinte/expresii cresc scorul de risc.</div>
+          </div>
+
+          <div class="field field--full">
+            <div class="alert alert--soft" role="note">
+              Setările sunt persistate local și influențează simularea din AI Center.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal__footer">
+        <div class="modal__footerLeft"></div>
+        <div class="modal__footerRight">
+          <button class="btn btn--ghost" type="button" data-close="modalAISettings" aria-label="Anulează">Anulează</button>
+          <button id="btnSaveAISettings" class="btn btn--primary" type="submit" aria-label="Salvează setări AI">Salvează</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- =========================================================
+       Scripts (no external libs)
+  ========================================================== -->
+  <script src="./assets/js/hr.data.js"></script>
+  <script src="./assets/js/hrai.js"></script>
+  <script src="./assets/js/hr.js"></script>
+
+  <noscript>
+    <div style="padding:16px;font-family:system-ui,sans-serif">
+      Aplicația necesită JavaScript activat.
+    </div>
+  </noscript>
+</body>
+</html>
+
