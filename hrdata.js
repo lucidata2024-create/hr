@@ -63,26 +63,6 @@
       notes: "Fondator LuciData Tech",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
-    },
-     {
-      id: uuid(),
-      firstName: "Panaghie",
-      lastName: "Valentin",
-      emailCompany: "andrei.ionescu@lucidata.ro",
-      emailPersonal: "andrei.ionescu@gmail.com",
-      phone: "+40721111222",
-      department: "IT",
-      role: "CEO",
-      managerId: null,
-      hireDate: "2019-03-01",
-      status: "Activ",
-      address: "Str. Aviatorilor 10, București",
-      iban: "RO49AAAA1B31007593840000",
-      emergencyContact: { name: "Maria Ionescu", phone: "+40730000111" },
-      tags: ["executive"],
-      notes: "Fondator LuciData Tech",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
     }
   ];
 
