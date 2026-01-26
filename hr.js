@@ -1,5 +1,4 @@
 
-Ai spus:
 /* =========================================================
    LuciData Tech — HR Core (SINGLE FILE)
    Firestore ONLY · No localStorage · No modules
