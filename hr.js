@@ -1,7 +1,6 @@
 /* =========================================================
    LuciData Tech — HR Core (SINGLE FILE)
    Firestore ONLY · No localStorage · No modules
-   Compatible 1:1 with provided hr.html
    Namespace: window.HR_APP
 ========================================================= */
 (function () {
@@ -42,17 +41,13 @@
     setTimeout(() => el.remove(), 3000);
   }
 
-  /* =========================
-     LOADER
-  ========================= */
   function showApp() {
     $("#appLoader")?.remove();
-    const app = $("#app");
-    if (app) app.hidden = false;
+    $("#app") && ($("#app").hidden = false);
   }
 
   /* =========================
-     ROUTING (SIDEBAR)
+     ROUTING
   ========================= */
   function activateRoute(route) {
     $$(".route").forEach(r =>
@@ -64,50 +59,33 @@
       n.classList.toggle("is-active", active);
       n.setAttribute("aria-current", active ? "page" : "false");
     });
-
-    const titles = {
-      overview: "Dashboard HR",
-      employees: "Angajați",
-      documents: "Dosar Digital",
-      workflows: "Workflows",
-      ai: "AI Center",
-      settings: "Setări",
-      portal: "Employee Portal",
-    };
-
-    if ($("#pageTitle")) $("#pageTitle").textContent = titles[route] || "HR";
   }
 
-  /* =========================
-     GLOBAL UI DISPATCHER
-     data-open / data-close / data-nav
-  ========================= */
   function bindGlobalUI() {
-    document.addEventListener("click", (e) => {
+    document.addEventListener("click", async (e) => {
       const openBtn = e.target.closest("[data-open]");
       if (openBtn) {
         const dlg = document.getElementById(openBtn.dataset.open);
-        if (dlg?.showModal) dlg.showModal();
+        if (dlg?.showModal) {
+          if (dlg.id === "modalRequest") {
+            await loadEmployeesIntoSelect($("#reqRequester"));
+          }
+          if (dlg.id === "modalDocument") {
+            await loadEmployeesIntoSelect($("#docEmployee"));
+          }
+          dlg.showModal();
+        }
         return;
       }
 
       const closeBtn = e.target.closest("[data-close]");
       if (closeBtn) {
-        const dlg = document.getElementById(closeBtn.dataset.close);
-        if (dlg?.close) dlg.close();
+        document.getElementById(closeBtn.dataset.close)?.close();
         return;
       }
 
       const navBtn = e.target.closest("[data-nav]");
-      if (navBtn) {
-        activateRoute(navBtn.dataset.nav);
-      }
-    });
-
-    $$(".nav__item").forEach(btn => {
-      btn.addEventListener("click", () => {
-        activateRoute(btn.dataset.route);
-      });
+      if (navBtn) activateRoute(navBtn.dataset.nav);
     });
   }
 
@@ -119,33 +97,46 @@
   const colRequests = db.collection("requests");
 
   /* =========================
-     EMPLOYEES
+     EMPLOYEES CACHE
   ========================= */
-  const Employees = {
-    list: [],
+  const employeeMap = {};
 
-    async load() {
-      const snap = await colEmployees.orderBy("lastName").get();
-      this.list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    },
+  async function loadEmployeeMap() {
+    const snap = await colEmployees.orderBy("lastName").get();
+    snap.docs.forEach(d => {
+      employeeMap[d.id] = d.data();
+    });
+  }
 
-    async save(emp) {
-      emp.updatedAt = isoNow();
-      if (emp.id) {
-        await colEmployees.doc(emp.id).set(emp, { merge: true });
-      } else {
-        emp.createdAt = isoNow();
-        await colEmployees.add(emp);
-      }
-    },
-  };
+  async function loadEmployeesIntoSelect(selectEl) {
+    if (!selectEl) return;
+    selectEl.innerHTML = "";
 
-  function renderEmployees() {
+    if (!Object.keys(employeeMap).length) {
+      await loadEmployeeMap();
+    }
+
+    Object.entries(employeeMap).forEach(([id, e]) => {
+      if (e.status !== "Activ") return;
+      const opt = document.createElement("option");
+      opt.value = id;
+      opt.textContent = `${e.firstName} ${e.lastName} — ${e.department}`;
+      selectEl.appendChild(opt);
+    });
+  }
+
+  /* =========================
+     EMPLOYEES LIST
+  ========================= */
+  async function renderEmployees() {
     const tb = $("#empTbody");
     if (!tb) return;
     tb.innerHTML = "";
 
-    Employees.list.forEach(e => {
+    const snap = await colEmployees.orderBy("lastName").get();
+
+    snap.docs.forEach(d => {
+      const e = d.data();
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>${e.firstName} ${e.lastName}</td>
@@ -157,117 +148,112 @@
             ${e.status}
           </span>
         </td>
-        <td class="col-actions">
-          <button class="btn btn--ghost btn--sm" data-edit-emp="${e.id}">Edit</button>
-        </td>
       `;
       tb.appendChild(tr);
     });
   }
 
   /* =========================
-     EMPLOYEE MODAL
+     EMPLOYEE FORM
   ========================= */
-  function bindEmployeeForm() {
-    $("#formEmployee")?.addEventListener("submit", async (e) => {
-      e.preventDefault();
+  $("#formEmployee")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-      const emp = {
-        id: $("#empId").value || null,
-        firstName: $("#empFirstName").value.trim(),
-        lastName: $("#empLastName").value.trim(),
-        emailCompany: $("#empEmailCompany").value.trim(),
-        emailPersonal: $("#empEmailPersonal").value.trim(),
-        phone: $("#empPhone").value.trim(),
-        hireDate: $("#empHireDate").value,
-        department: $("#empDepartment").value,
-        role: $("#empRole").value,
-        status: $("#empStatusModal").value,
-        notes: $("#empNotes").value.trim(),
-      };
+    const id = $("#empId").value || null;
 
-      await Employees.save(emp);
-      await Employees.load();
-      renderEmployees();
-      $("#modalEmployee").close();
-      toast("Angajat salvat");
-    });
-  }
+    const emp = {
+      firstName: $("#empFirstName").value.trim(),
+      lastName: $("#empLastName").value.trim(),
+      emailCompany: $("#empEmailCompany").value.trim(),
+      emailPersonal: $("#empEmailPersonal").value.trim(),
+      phone: $("#empPhone").value.trim(),
+      hireDate: $("#empHireDate").value,
+      department: $("#empDepartment").value,
+      role: $("#empRole").value,
+      status: $("#empStatusModal").value,
+      notes: $("#empNotes").value.trim(),
+      updatedAt: isoNow()
+    };
+
+    if (id) {
+      await colEmployees.doc(id).set(emp, { merge: true });
+    } else {
+      emp.createdAt = isoNow();
+      await colEmployees.add(emp);
+    }
+
+    await loadEmployeeMap();
+    await renderEmployees();
+    $("#modalEmployee").close();
+    toast("Angajat salvat");
+  });
 
   /* =========================
-     DOCUMENTS (UPLOAD METADATA)
+     DOCUMENTS
   ========================= */
-  function bindDocumentForm() {
-    $("#formDocument")?.addEventListener("submit", async (e) => {
-      e.preventDefault();
+  $("#formDocument")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-      const file = $("#docFile").files[0];
-      if (!file) return;
+    const file = $("#docFile").files[0];
+    if (!file) return;
 
-      const doc = {
-        employeeId: $("#docEmployee").value,
-        type: $("#docTip").value,
-        fileName: file.name,
-        size: file.size,
-        issueDate: $("#docIssueDate").value,
-        expiryDate: $("#docExpiryDate").value,
-        createdAt: isoNow(),
-      };
-
-      await colDocuments.add(doc);
-      $("#modalDocument").close();
-      toast("Document încărcat");
+    await colDocuments.add({
+      employeeId: $("#docEmployee").value,
+      type: $("#docTip").value,
+      fileName: file.name,
+      size: file.size,
+      issueDate: $("#docIssueDate").value,
+      expiryDate: $("#docExpiryDate").value,
+      createdAt: isoNow()
     });
-  }
+
+    $("#modalDocument").close();
+    toast("Document încărcat");
+  });
 
   /* =========================
-     REQUESTS (WORKFLOWS)
+     WORKFLOWS / REQUESTS
   ========================= */
-  function bindRequestForm() {
-    $("#formRequest")?.addEventListener("submit", async (e) => {
-      e.preventDefault();
+  $("#formRequest")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-      const req = {
-        type: $("#reqTypeModal").value,
-        requester: $("#reqRequester").value,
-        department: $("#reqDepartment").value,
-        status: $("#reqStatusModal").value,
-        motiv: $("#reqMotiv").value.trim(),
-        createdAt: isoNow(),
-        timeline: [
-          {
-            at: isoNow(),
-            action: "Creat",
-            by: $("#reqRequester").value,
-          },
-        ],
-      };
+    const requesterId = $("#reqRequester").value;
 
-      await colRequests.add(req);
-      $("#modalRequest").close();
-      toast("Cerere creată");
+    await colRequests.add({
+      type: $("#reqTypeModal").value,
+      requester: requesterId,
+      department: employeeMap[requesterId]?.department || "",
+      status: $("#reqStatusModal").value,
+      motiv: $("#reqMotiv").value.trim(),
+      createdAt: isoNow(),
+      timeline: [
+        {
+          at: isoNow(),
+          action: "Creat",
+          by: requesterId
+        }
+      ]
     });
-  }
+
+    $("#modalRequest").close();
+    toast("Cerere creată");
+  });
 
   /* =========================
      INIT
   ========================= */
   async function init() {
     bindGlobalUI();
-    bindEmployeeForm();
-    bindDocumentForm();
-    bindRequestForm();
-
-    await Employees.load();
-    renderEmployees();
-
+    await loadEmployeeMap();
+    await renderEmployees();
     activateRoute("overview");
     showApp();
-
-    console.info("HR Core READY — single hr.js, Firestore only");
+    console.info("HR Core READY — Firestore only");
   }
 
   document.addEventListener("DOMContentLoaded", init);
 
-  window.HR_APP = { reloadEmployees: Employees.load };
+  window.HR_APP = {
+    reloadEmployees: loadEmployeeMap
+  };
 })();
