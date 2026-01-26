@@ -1,4 +1,3 @@
-
 /* =========================================================
    LuciData Tech — HR Core (SINGLE FILE)
    Firestore ONLY · No localStorage · No modules
@@ -148,7 +147,7 @@
 
     Employees.list.forEach(e => {
       const tr = document.createElement("tr");
-      tr.innerHTML = 
+      tr.innerHTML = `
         <td>${e.firstName} ${e.lastName}</td>
         <td>${e.department}</td>
         <td>${e.role}</td>
@@ -161,7 +160,7 @@
         <td class="col-actions">
           <button class="btn btn--ghost btn--sm" data-edit-emp="${e.id}">Edit</button>
         </td>
-      ;
+      `;
       tb.appendChild(tr);
     });
   }
