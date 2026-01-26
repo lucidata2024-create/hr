@@ -1,202 +1,248 @@
-// /assets/js/hr.js
-import {
-  db,
-  collection, doc,
-  getDocs, getDoc,
-  addDoc, updateDoc, deleteDoc,
-  setDoc
-} from "./hr.firebase.js";
+/* =========================================================
+   LuciData Tech — HR Core
+   Firebase Firestore ONLY
+   Compatible 1:1 with provided hr.html
+   Namespace: window.HR_APP
+========================================================= */
+(function () {
+  "use strict";
 
-/* =========================
-   STATE
-========================= */
-const APP = {
-  state: {
-    employees: [],
-    documents: [],
-    workflows: [],
-    settings: {}
+  /* =========================
+     FIREBASE INIT
+  ========================= */
+  const firebaseConfig = {
+    apiKey: "AIzaSyAltOFeJKk1BhjpqZYd9cb7u_GmZ0EVXVE",
+    authDomain: "lucidata-hr.firebaseapp.com",
+    projectId: "lucidata-hr",
+    storageBucket: "lucidata-hr.firebasestorage.app",
+    messagingSenderId: "13908534678",
+    appId: "1:13908534678:web:c92caad4b9eb7d442be9b7",
+  };
+
+  if (!window.firebase?.apps?.length) {
+    firebase.initializeApp(firebaseConfig);
   }
-};
 
-/* =========================
-   HELPERS
-========================= */
-const $ = (q) => document.querySelector(q);
-const nowISO = () => new Date().toISOString();
+  const db = firebase.firestore();
 
-/* =========================
-   FIRESTORE LOADERS
-========================= */
-async function loadCollection(name) {
-  const snap = await getDocs(collection(db, name));
-  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
-}
+  /* =========================
+     HELPERS
+  ========================= */
+  const $ = (q) => document.querySelector(q);
+  const $$ = (q) => Array.from(document.querySelectorAll(q));
 
-async function loadAll() {
-  const [employees, documents, workflows] = await Promise.all([
-    loadCollection("employees"),
-    loadCollection("documents"),
-    loadCollection("workflows")
-  ]);
+  const toast = (msg) => {
+    const host = $("#toastHost");
+    if (!host) return;
+    const el = document.createElement("div");
+    el.className = "toast";
+    el.textContent = msg;
+    host.appendChild(el);
+    setTimeout(() => el.remove(), 3200);
+  };
 
-  APP.state.employees = employees;
-  APP.state.documents = documents;
-  APP.state.workflows = workflows;
-}
+  const nowISO = () => new Date().toISOString();
 
-/* =========================
-   EMPLOYEES
-========================= */
-async function saveEmployee(e) {
-  if (e.id) {
-    await updateDoc(doc(db, "employees", e.id), e);
-  } else {
-    await addDoc(collection(db, "employees"), {
-      ...e,
-      createdAt: nowISO()
+  /* =========================
+     LOADER CONTROL
+  ========================= */
+  function showApp() {
+    $("#appLoader")?.remove();
+    const app = $("#app");
+    if (app) app.hidden = false;
+  }
+
+  /* =========================
+     ROUTING (SIDEBAR)
+  ========================= */
+  function activateRoute(route) {
+    $$(".route").forEach(r =>
+      r.classList.toggle("is-active", r.dataset.routeView === route)
+    );
+
+    $$(".nav__item").forEach(n => {
+      const active = n.dataset.route === route;
+      n.classList.toggle("is-active", active);
+      n.setAttribute("aria-current", active ? "page" : "false");
     });
-  }
-}
 
-async function deleteEmployee(id) {
-  await deleteDoc(doc(db, "employees", id));
-}
-
-/* =========================
-   DOCUMENTS (metadata)
-========================= */
-async function saveDocument(d) {
-  await addDoc(collection(db, "documents"), {
-    ...d,
-    createdAt: nowISO()
-  });
-}
-
-/* =========================
-   WORKFLOWS
-========================= */
-async function saveWorkflow(w) {
-  await addDoc(collection(db, "workflows"), {
-    ...w,
-    createdAt: nowISO(),
-    status: "Pending"
-  });
-}
-
-/* =========================
-   UI RENDER
-========================= */
-function renderEmployees() {
-  const tbody = $("#empTbody");
-  if (!tbody) return;
-
-  tbody.innerHTML = APP.state.employees.map(e => `
-    <tr>
-      <td>${e.firstName} ${e.lastName}</td>
-      <td>${e.department}</td>
-      <td>${e.role}</td>
-      <td>${e.emailCompany}</td>
-      <td>
-        <button data-edit="${e.id}">Edit</button>
-        <button data-del="${e.id}">Delete</button>
-      </td>
-    </tr>
-  `).join("");
-}
-
-function renderDocuments() {
-  const tbody = $("#docTbody");
-  if (!tbody) return;
-
-  tbody.innerHTML = APP.state.documents.map(d => `
-    <tr>
-      <td>${d.employeeName}</td>
-      <td>${d.type}</td>
-      <td>${d.expiryDate}</td>
-    </tr>
-  `).join("");
-}
-
-function renderWorkflows() {
-  const tbody = $("#reqTbody");
-  if (!tbody) return;
-
-  tbody.innerHTML = APP.state.workflows.map(w => `
-    <tr>
-      <td>${w.type}</td>
-      <td>${w.employeeName}</td>
-      <td>${w.status}</td>
-    </tr>
-  `).join("");
-}
-
-/* =========================
-   EVENTS
-========================= */
-function wireEvents() {
-
-  // Employee save
-  $("#formEmployee")?.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const emp = {
-      firstName: $("#empFirstName").value,
-      lastName: $("#empLastName").value,
-      department: $("#empDepartment").value,
-      role: $("#empRole").value,
-      emailCompany: $("#empEmailCompany").value
+    const titleMap = {
+      overview: "Dashboard HR",
+      employees: "Angajați",
+      documents: "Dosar Digital",
+      orgchart: "Organigramă",
+      workflows: "Workflows",
+      ai: "AI Center",
+      settings: "Setări",
+      portal: "Employee Portal",
     };
 
-    await saveEmployee(emp);
-    await boot();
-  });
+    $("#pageTitle").textContent = titleMap[route] || "HR";
+  }
 
-  // Employee edit / delete
-  document.body.addEventListener("click", async (e) => {
-    if (e.target.dataset.del) {
-      await deleteEmployee(e.target.dataset.del);
-      await boot();
+  function bindNavigation() {
+    $$(".nav__item").forEach(btn => {
+      btn.addEventListener("click", () => {
+        activateRoute(btn.dataset.route);
+      });
+    });
+  }
+
+  /* =========================
+     GLOBAL ACTION BINDER
+     (data-open / data-close / data-nav)
+  ========================= */
+  function bindGlobalActions() {
+    document.addEventListener("click", (e) => {
+      const openBtn = e.target.closest("[data-open]");
+      if (openBtn) {
+        const dlg = document.getElementById(openBtn.dataset.open);
+        if (dlg?.showModal) dlg.showModal();
+        return;
+      }
+
+      const closeBtn = e.target.closest("[data-close]");
+      if (closeBtn) {
+        const dlg = document.getElementById(closeBtn.dataset.close);
+        if (dlg?.close) dlg.close();
+        return;
+      }
+
+      const navBtn = e.target.closest("[data-nav]");
+      if (navBtn) {
+        document
+          .querySelector(`.nav__item[data-route="${navBtn.dataset.nav}"]`)
+          ?.click();
+      }
+    });
+  }
+
+  /* =========================
+     EMPLOYEES (FIRESTORE)
+  ========================= */
+  const Employees = {
+    list: [],
+
+    async load() {
+      const snap = await db.collection("employees").orderBy("lastName").get();
+      this.list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    },
+
+    async save(emp) {
+      emp.updatedAt = nowISO();
+      if (emp.id) {
+        await db.collection("employees").doc(emp.id).set(emp, { merge: true });
+      } else {
+        emp.createdAt = nowISO();
+        await db.collection("employees").add(emp);
+      }
+    },
+
+    async remove(id) {
+      await db.collection("employees").doc(id).delete();
     }
-  });
+  };
 
-  // Document save
-  $("#formDocument")?.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  /* =========================
+     DASHBOARD KPI
+  ========================= */
+  function renderKPI() {
+    $("#kpiEmployees").textContent = Employees.list.length;
 
-    await saveDocument({
-      employeeName: $("#docEmployeeName").value,
-      type: $("#docType").value,
-      expiryDate: $("#docExpiryDate").value
+    const active = Employees.list.filter(e => e.status === "Activ").length;
+    $("#kpiEmployeesActive").textContent = active;
+    $("#kpiEmployeesInactive").textContent = Employees.list.length - active;
+  }
+
+  /* =========================
+     EMPLOYEES TABLE
+  ========================= */
+  function renderEmployeesTable() {
+    const tb = $("#empTbody");
+    if (!tb) return;
+    tb.innerHTML = "";
+
+    Employees.list.forEach(emp => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${emp.firstName} ${emp.lastName}</td>
+        <td>${emp.department}</td>
+        <td>${emp.role}</td>
+        <td>${emp.emailCompany}</td>
+        <td>
+          <span class="badge ${emp.status === "Activ" ? "badge--ok" : "badge--danger"}">
+            ${emp.status}
+          </span>
+        </td>
+        <td class="col-actions">
+          <button class="btn btn--ghost btn--sm" data-edit="${emp.id}">Edit</button>
+        </td>
+      `;
+      tb.appendChild(tr);
     });
+  }
 
-    await boot();
-  });
+  /* =========================
+     EMPLOYEE MODAL
+  ========================= */
+  function bindEmployeeModal() {
+    const dlg = $("#modalEmployee");
+    if (!dlg) return;
 
-  // Workflow save
-  $("#formRequest")?.addEventListener("submit", async (e) => {
-    e.preventDefault();
+    $("#formEmployee").addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-    await saveWorkflow({
-      type: $("#reqType").value,
-      employeeName: $("#reqEmployee").value
+      const emp = {
+        id: $("#empId").value || null,
+        firstName: $("#empFirstName").value.trim(),
+        lastName: $("#empLastName").value.trim(),
+        emailCompany: $("#empEmailCompany").value.trim(),
+        emailPersonal: $("#empEmailPersonal").value.trim(),
+        phone: $("#empPhone").value.trim(),
+        hireDate: $("#empHireDate").value,
+        department: $("#empDepartment").value,
+        role: $("#empRole").value,
+        status: $("#empStatusModal").value,
+        notes: $("#empNotes").value.trim(),
+      };
+
+      await Employees.save(emp);
+      await Employees.load();
+      renderKPI();
+      renderEmployeesTable();
+      dlg.close();
+      toast("Angajat salvat");
     });
+  }
 
-    await boot();
-  });
-}
+  /* =========================
+     INIT
+  ========================= */
+  async function init() {
+    bindNavigation();
+    bindGlobalActions();
+    bindEmployeeModal();
 
-/* =========================
-   BOOT
-========================= */
-async function boot() {
-  await loadAll();
-  renderEmployees();
-  renderDocuments();
-  renderWorkflows();
-}
+    await Employees.load();
+    renderKPI();
+    renderEmployeesTable();
 
-document.addEventListener("DOMContentLoaded", async () => {
-  wireEvents();
-  await boot();
-});
+    activateRoute("overview");
+    showApp();
+
+    console.info("HR Core READY — Firebase only");
+  }
+
+  document.addEventListener("DOMContentLoaded", init);
+
+  /* =========================
+     PUBLIC API
+  ========================= */
+  window.HR_APP = {
+    reload: async () => {
+      await Employees.load();
+      renderKPI();
+      renderEmployeesTable();
+    }
+  };
+})();
