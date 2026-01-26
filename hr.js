@@ -1,14 +1,14 @@
 /* =========================================================
    LuciData Tech — HR Core
-   Firebase Firestore ONLY (no localStorage)
+   Firebase Firestore ONLY
+   Compatible 1:1 with provided hr.html
    Namespace: window.HR_APP
 ========================================================= */
-
 (function () {
   "use strict";
 
   /* =========================
-     FIREBASE INIT (GLOBAL)
+     FIREBASE INIT
   ========================= */
   const firebaseConfig = {
     apiKey: "AIzaSyAltOFeJKk1BhjpqZYd9cb7u_GmZ0EVXVE",
@@ -19,7 +19,10 @@
     appId: "1:13908534678:web:c92caad4b9eb7d442be9b7",
   };
 
-  firebase.initializeApp(firebaseConfig);
+  if (!window.firebase?.apps?.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+
   const db = firebase.firestore();
 
   /* =========================
@@ -35,21 +38,87 @@
     el.className = "toast";
     el.textContent = msg;
     host.appendChild(el);
-    setTimeout(() => el.remove(), 3000);
+    setTimeout(() => el.remove(), 3200);
   };
+
+  const nowISO = () => new Date().toISOString();
 
   /* =========================
      LOADER CONTROL
   ========================= */
   function showApp() {
-    const loader = $("#appLoader");
+    $("#appLoader")?.remove();
     const app = $("#app");
-    if (loader) loader.style.display = "none";
     if (app) app.hidden = false;
   }
 
   /* =========================
-     DATA: EMPLOYEES
+     ROUTING (SIDEBAR)
+  ========================= */
+  function activateRoute(route) {
+    $$(".route").forEach(r =>
+      r.classList.toggle("is-active", r.dataset.routeView === route)
+    );
+
+    $$(".nav__item").forEach(n => {
+      const active = n.dataset.route === route;
+      n.classList.toggle("is-active", active);
+      n.setAttribute("aria-current", active ? "page" : "false");
+    });
+
+    const titleMap = {
+      overview: "Dashboard HR",
+      employees: "Angajați",
+      documents: "Dosar Digital",
+      orgchart: "Organigramă",
+      workflows: "Workflows",
+      ai: "AI Center",
+      settings: "Setări",
+      portal: "Employee Portal",
+    };
+
+    $("#pageTitle").textContent = titleMap[route] || "HR";
+  }
+
+  function bindNavigation() {
+    $$(".nav__item").forEach(btn => {
+      btn.addEventListener("click", () => {
+        activateRoute(btn.dataset.route);
+      });
+    });
+  }
+
+  /* =========================
+     GLOBAL ACTION BINDER
+     (data-open / data-close / data-nav)
+  ========================= */
+  function bindGlobalActions() {
+    document.addEventListener("click", (e) => {
+      const openBtn = e.target.closest("[data-open]");
+      if (openBtn) {
+        const dlg = document.getElementById(openBtn.dataset.open);
+        if (dlg?.showModal) dlg.showModal();
+        return;
+      }
+
+      const closeBtn = e.target.closest("[data-close]");
+      if (closeBtn) {
+        const dlg = document.getElementById(closeBtn.dataset.close);
+        if (dlg?.close) dlg.close();
+        return;
+      }
+
+      const navBtn = e.target.closest("[data-nav]");
+      if (navBtn) {
+        document
+          .querySelector(`.nav__item[data-route="${navBtn.dataset.nav}"]`)
+          ?.click();
+      }
+    });
+  }
+
+  /* =========================
+     EMPLOYEES (FIRESTORE)
   ========================= */
   const Employees = {
     list: [],
@@ -60,9 +129,11 @@
     },
 
     async save(emp) {
+      emp.updatedAt = nowISO();
       if (emp.id) {
         await db.collection("employees").doc(emp.id).set(emp, { merge: true });
       } else {
+        emp.createdAt = nowISO();
         await db.collection("employees").add(emp);
       }
     },
@@ -79,10 +150,8 @@
     $("#kpiEmployees").textContent = Employees.list.length;
 
     const active = Employees.list.filter(e => e.status === "Activ").length;
-    const inactive = Employees.list.length - active;
-
     $("#kpiEmployeesActive").textContent = active;
-    $("#kpiEmployeesInactive").textContent = inactive;
+    $("#kpiEmployeesInactive").textContent = Employees.list.length - active;
   }
 
   /* =========================
@@ -114,18 +183,17 @@
   }
 
   /* =========================
-     MODAL: EMPLOYEE
+     EMPLOYEE MODAL
   ========================= */
   function bindEmployeeModal() {
     const dlg = $("#modalEmployee");
     if (!dlg) return;
 
-    $("#btnQuickAddEmployee")?.addEventListener("click", () => dlg.showModal());
-
     $("#formEmployee").addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const emp = {
+        id: $("#empId").value || null,
         firstName: $("#empFirstName").value.trim(),
         lastName: $("#empLastName").value.trim(),
         emailCompany: $("#empEmailCompany").value.trim(),
@@ -135,8 +203,7 @@
         department: $("#empDepartment").value,
         role: $("#empRole").value,
         status: $("#empStatusModal").value,
-        notes: $("#empNotes").value,
-        updatedAt: new Date().toISOString(),
+        notes: $("#empNotes").value.trim(),
       };
 
       await Employees.save(emp);
@@ -149,31 +216,33 @@
   }
 
   /* =========================
-     ROUTING
-  ========================= */
-  function bindNavigation() {
-    $$(".nav__item").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const route = btn.dataset.route;
-        $$(".route").forEach(r => r.classList.toggle("is-active", r.dataset.routeView === route));
-        $("#pageTitle").textContent = btn.textContent.trim();
-      });
-    });
-  }
-
-  /* =========================
      INIT
   ========================= */
   async function init() {
+    bindNavigation();
+    bindGlobalActions();
+    bindEmployeeModal();
+
     await Employees.load();
     renderKPI();
     renderEmployeesTable();
-    bindEmployeeModal();
-    bindNavigation();
+
+    activateRoute("overview");
     showApp();
 
     console.info("HR Core READY — Firebase only");
   }
 
   document.addEventListener("DOMContentLoaded", init);
+
+  /* =========================
+     PUBLIC API
+  ========================= */
+  window.HR_APP = {
+    reload: async () => {
+      await Employees.load();
+      renderKPI();
+      renderEmployeesTable();
+    }
+  };
 })();
