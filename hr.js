@@ -1,7 +1,7 @@
 /* =========================================================
-   LuciData Tech — HR Core (ES MODULE)
-   Firestore only · Single file
-   Compatible with hr.html (type="module")
+   LuciData Tech — HR Core
+   SINGLE FILE · ES MODULE · FIRESTORE ONLY
+   FINAL, STABLE VERSION
 ========================================================= */
 
 import { initializeApp } from
@@ -14,8 +14,8 @@ import {
   addDoc,
   updateDoc,
   doc,
-  orderBy,
-  query
+  query,
+  orderBy
 } from
   "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
@@ -52,7 +52,7 @@ function toast(msg) {
 }
 
 /* =========================
-   APP LOADER
+   LOADER
 ========================= */
 function showApp() {
   $("#appLoader")?.remove();
@@ -60,35 +60,59 @@ function showApp() {
 }
 
 /* =========================
-   ROUTING + UI DISPATCHER
+   ROUTING + SIDEBAR
 ========================= */
 function activateRoute(route) {
-  $$(".route").forEach(r =>
-    r.classList.toggle("is-active", r.dataset.routeView === route)
-  );
-  $$(".nav__item").forEach(n =>
-    n.classList.toggle("is-active", n.dataset.route === route)
-  );
+  $$(".route").forEach(r => {
+    r.classList.toggle("is-active", r.dataset.routeView === route);
+  });
+
+  $$(".nav__item").forEach(n => {
+    const active = n.dataset.route === route;
+    n.classList.toggle("is-active", active);
+    n.setAttribute("aria-current", active ? "page" : "false");
+  });
 }
 
+/* =========================
+   GLOBAL UI DISPATCHER
+========================= */
 function bindGlobalUI() {
   document.addEventListener("click", (e) => {
+
     const openBtn = e.target.closest("[data-open]");
     if (openBtn) {
-      document.getElementById(openBtn.dataset.open)?.showModal();
+      const dlg = document.getElementById(openBtn.dataset.open);
+      dlg?.showModal();
       return;
     }
 
     const closeBtn = e.target.closest("[data-close]");
     if (closeBtn) {
-      document.getElementById(closeBtn.dataset.close)?.close();
+      const dlg = document.getElementById(closeBtn.dataset.close);
+      dlg?.close();
       return;
     }
 
     const navBtn = e.target.closest("[data-nav]");
-    if (navBtn) activateRoute(navBtn.dataset.nav);
+    if (navBtn) {
+      activateRoute(navBtn.dataset.nav);
+      return;
+    }
+
+    const sideBtn = e.target.closest(".nav__item");
+    if (sideBtn) {
+      activateRoute(sideBtn.dataset.route);
+    }
   });
 }
+
+/* =========================
+   FIRESTORE COLLECTIONS
+========================= */
+const colEmployees = collection(db, "employees");
+const colDocuments = collection(db, "documents");
+const colRequests  = collection(db, "requests");
 
 /* =========================
    CACHE (SINGLE SOURCE)
@@ -101,29 +125,34 @@ const HR_CACHE = {
    EMPLOYEES
 ========================= */
 async function loadEmployees() {
-  const q = query(collection(db, "employees"), orderBy("lastName"));
+  const q = query(colEmployees, orderBy("lastName"));
   const snap = await getDocs(q);
-  HR_CACHE.employees = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  HR_CACHE.employees = snap.docs.map(d => ({
+    id: d.id,
+    ...d.data()
+  }));
 }
 
 async function saveEmployee(emp) {
   emp.updatedAt = nowISO();
+
   if (emp.id) {
     await updateDoc(doc(db, "employees", emp.id), emp);
   } else {
     emp.createdAt = nowISO();
-    await addDoc(collection(db, "employees"), emp);
+    await addDoc(colEmployees, emp);
   }
 }
 
 /* =========================
-   EMPLOYEE BINDINGS
+   EMPLOYEE SELECTS (GLOBAL)
 ========================= */
 function fillEmployeeSelect(id) {
   const sel = document.getElementById(id);
   if (!sel) return;
 
   sel.innerHTML = `<option value="">Selectează…</option>`;
+
   HR_CACHE.employees
     .filter(e => e.status === "Activ")
     .forEach(e => {
@@ -145,7 +174,7 @@ function refreshEmployeeBindings() {
    EMPLOYEE FORM
 ========================= */
 function bindEmployeeForm() {
-  $("#formEmployee").addEventListener("submit", async (e) => {
+  $("#formEmployee")?.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const emp = {
@@ -171,16 +200,16 @@ function bindEmployeeForm() {
 }
 
 /* =========================
-   DOCUMENTS
+   DOCUMENT UPLOAD
 ========================= */
 function bindDocumentForm() {
-  $("#formDocument").addEventListener("submit", async (e) => {
+  $("#formDocument")?.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const file = $("#docFile").files[0];
     if (!file) return;
 
-    await addDoc(collection(db, "documents"), {
+    await addDoc(colDocuments, {
       employeeId: $("#docEmployee").value,
       type: $("#docTip").value,
       fileName: file.name,
@@ -196,18 +225,18 @@ function bindDocumentForm() {
 }
 
 /* =========================
-   WORKFLOWS
+   WORKFLOWS / REQUESTS
 ========================= */
 function bindRequestForm() {
-  $("#formRequest").addEventListener("submit", async (e) => {
+  $("#formRequest")?.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    await addDoc(collection(db, "requests"), {
+    await addDoc(colRequests, {
       type: $("#reqTypeModal").value,
       requesterId: $("#reqRequester").value,
       department: $("#reqDepartment").value,
       status: $("#reqStatusModal").value,
-      motiv: $("#reqMotiv").value,
+      motiv: $("#reqMotiv").value.trim(),
       createdAt: nowISO(),
     });
 
@@ -231,7 +260,7 @@ async function init() {
   activateRoute("overview");
   showApp();
 
-  console.info("HR Core READY (ES MODULE)");
+  console.info("HR Core READY — FINAL, STABLE");
 }
 
 document.addEventListener("DOMContentLoaded", init);
