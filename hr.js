@@ -1,3 +1,5 @@
+
+Ai spus:
 /* =========================================================
    LuciData Tech — HR Core (SINGLE FILE)
    Firestore ONLY · No localStorage · No modules
@@ -83,20 +85,11 @@
      data-open / data-close / data-nav
   ========================= */
   function bindGlobalUI() {
-    document.addEventListener("click", async (e) => {
+    document.addEventListener("click", (e) => {
       const openBtn = e.target.closest("[data-open]");
       if (openBtn) {
         const dlg = document.getElementById(openBtn.dataset.open);
-
-        if (dlg?.showModal) {
-          if (dlg.id === "modalRequest") {
-            await populateEmployeesSelect($("#reqRequester"));
-          }
-          if (dlg.id === "modalDocument") {
-            await populateEmployeesSelect($("#docEmployee"));
-          }
-          dlg.showModal();
-        }
+        if (dlg?.showModal) dlg.showModal();
         return;
       }
 
@@ -128,35 +121,6 @@
   const colRequests = db.collection("requests");
 
   /* =========================
-     EMPLOYEES CACHE (ADD)
-  ========================= */
-  const employeeMap = {};
-
-  async function loadEmployeeMap() {
-    const snap = await colEmployees.orderBy("lastName").get();
-    snap.docs.forEach(d => {
-      employeeMap[d.id] = d.data();
-    });
-  }
-
-  async function populateEmployeesSelect(selectEl) {
-    if (!selectEl) return;
-    selectEl.innerHTML = "";
-
-    if (!Object.keys(employeeMap).length) {
-      await loadEmployeeMap();
-    }
-
-    Object.entries(employeeMap).forEach(([id, e]) => {
-      if (e.status !== "Activ") return;
-      const opt = document.createElement("option");
-      opt.value = id;
-      opt.textContent = `${e.firstName} ${e.lastName} — ${e.department}`;
-      selectEl.appendChild(opt);
-    });
-  }
-
-  /* =========================
      EMPLOYEES
   ========================= */
   const Employees = {
@@ -185,7 +149,7 @@
 
     Employees.list.forEach(e => {
       const tr = document.createElement("tr");
-      tr.innerHTML = `
+      tr.innerHTML = 
         <td>${e.firstName} ${e.lastName}</td>
         <td>${e.department}</td>
         <td>${e.role}</td>
@@ -198,7 +162,7 @@
         <td class="col-actions">
           <button class="btn btn--ghost btn--sm" data-edit-emp="${e.id}">Edit</button>
         </td>
-      `;
+      ;
       tb.appendChild(tr);
     });
   }
@@ -226,7 +190,6 @@
 
       await Employees.save(emp);
       await Employees.load();
-      await loadEmployeeMap();
       renderEmployees();
       $("#modalEmployee").close();
       toast("Angajat salvat");
@@ -266,12 +229,10 @@
     $("#formRequest")?.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const requesterId = $("#reqRequester").value;
-
       const req = {
         type: $("#reqTypeModal").value,
-        requester: requesterId,
-        department: employeeMap[requesterId]?.department || "",
+        requester: $("#reqRequester").value,
+        department: $("#reqDepartment").value,
         status: $("#reqStatusModal").value,
         motiv: $("#reqMotiv").value.trim(),
         createdAt: isoNow(),
@@ -279,7 +240,7 @@
           {
             at: isoNow(),
             action: "Creat",
-            by: requesterId,
+            by: $("#reqRequester").value,
           },
         ],
       };
@@ -300,18 +261,15 @@
     bindRequestForm();
 
     await Employees.load();
-    await loadEmployeeMap();
     renderEmployees();
 
     activateRoute("overview");
     showApp();
 
-    console.info("HR Core READY — Firestore only");
+    console.info("HR Core READY — single hr.js, Firestore only");
   }
 
   document.addEventListener("DOMContentLoaded", init);
 
-  window.HR_APP = {
-    reloadEmployees: Employees.load
-  };
+  window.HR_APP = { reloadEmployees: Employees.load };
 })();
